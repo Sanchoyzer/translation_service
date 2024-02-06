@@ -1,0 +1,116 @@
+[tool.ruff]
+target-version = 'py311'
+line-length = 100
+exclude = [
+    '.git',
+    'venv',
+    '.mypy_cache',
+    '.pytest_cache',
+    '.github',
+]
+lint.select = ['ALL']
+lint.ignore = [
+    'ANN101',  # missing-type-self
+    'EM101',  # Exception must not use a string literal, assign to variable first
+    'EM102',  # Exception must not use an f-string literal, assign to variable first
+    'FIX002',  # Line contains TODO, consider resolving the issue
+    'D100', 'D101', 'D102', 'D103', 'D104', 'D105', 'D106', 'D107', 'D203', 'D212',  # pydocstyle
+    'TD002', 'TD003',  # Missing author and issue link in TODO
+    'TRY003',  # Avoid specifying long messages outside the exception class
+]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = 'single'
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+known-first-party = ['app']
+
+[tool.ruff.lint.extend-per-file-ignores]
+'tests/*' = [
+    'ANN',  # flake8-annotations
+    'PT001',  # Use @pytest.fixture{expected} over @pytest.fixture{actual}
+    'PT018',  # Assertion should be broken down into multiple parts
+    'RUF018',  # Avoid assignment expressions in `assert` statements
+    'S101',  # Use of assert detected
+]
+'migrations/*' = [
+    'INP001',  # File is part of an implicit namespace package. Add an `__init__.py`
+]
+
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+exclude = '''
+/(
+  | \.git
+  | venv
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.ruff_cache
+  | \.github
+)/
+'''
+skip-string-normalization = true
+
+
+[tool.mypy]
+python_version = '3.11'
+show_error_context = true
+check_untyped_defs = true
+ignore_missing_imports = true
+exclude = ['^.git/', '^venv/', '^.mypy_cache/', '^.pytest_cache/', '^.ruff_cache/', '^.github/',]
+plugins = ['pydantic.mypy']
+
+
+[tool.bandit]
+exclude_dirs = ['tests',]
+
+
+[tool.pytest.ini_options]
+minversion = '6.0'
+addopts = '-s --dup-fixtures'
+testpaths = [
+    'tests',
+]
+
+
+[tool.poetry]
+name = 'Translation Service'
+version = '0.1.0'
+description = ''
+authors = ['Sanchoyzer']
+readme = 'README.md'
+repository = 'https://github.com/Sanchoyzer/translation_service'
+
+[tool.poetry.dependencies]
+python = '^3.11'
+fastapi = {extras = ['all'], version = '^0.109.0'}
+uvicorn = {extras = ['standard'], version = '^0.27.0'}
+gunicorn = '^21.2.0'
+sentry-sdk = {extras = ['fastapi'], version = '^1.40.0'}
+httpx = '^0.26.0'
+motor = '^3.3.2'
+mongodb-migrations = '^1.3.0'
+
+[tool.poetry.group.dev.dependencies]
+mypy = '^1.8.0'
+ruff = '^0.2.1'
+black = '^24.1.1'
+bandit = '^1.7.7'
+
+[tool.poetry.group.test.dependencies]
+faker = '^22.6.0'
+pytest = '^7.4.4'
+pytest-sugar = '^1.0.0'
+pytest-xdist = '^3.3.1'
+pytest-cov = '^4.1.0'
+pytest-asyncio = '^0.23.4'
+pytest-randomly = '^3.15.0'
+pytest-deadfixtures = '^2.2.1'
+pytest-httpx = '^0.29.0'
+
+[build-system]
+requires = ['poetry-core']
+build-backend = 'poetry.core.masonry.api'

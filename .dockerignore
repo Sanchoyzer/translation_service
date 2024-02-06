@@ -1,0 +1,58 @@
+.*
+!.gitignore
+**/docker-compose.yml
+**/README.md
+
+# Environments
+**/.venv
+**/env
+**/venv
+**/ENV
+**/env.bak
+**/venv.bak
+**/.env
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+**/__pypackages__
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__
+**/*.py[cod]
+**/*$py.class
+
+# C extensions
+**/*.so
+
+# Distribution / packaging
+**/.Python
+**/build
+**/develop-eggs
+**/dist
+**/downloads
+**/eggs
+**/.eggs
+**/lib
+**/lib64
+**/parts
+**/sdist
+**/var
+**/wheels
+**/pip-wheel-metadata
+**/share/python-wheels
+**/*.egg-info
+**/.installed.cfg
+**/*.egg
+**/MANIFEST
+
+# Git
+**/*.orig
+**/.git
+**/.github
+
+# caches
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+
+# IDE
+**/.idea

@@ -1,0 +1,94 @@
+name: linters & tests
+
+on:
+  push:
+    paths:
+      - '.github/**/*'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+      - 'Dockerfile'
+      - 'app/**/*'
+      - 'tests/**/*'
+  workflow_dispatch:
+
+
+env:
+  CI: true
+
+
+jobs:
+  notify-start:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "The job was automatically triggered by a '${{ github.event_name }}' event for '${{ github.ref }}' branch"
+
+  python-linters:
+    needs: [ notify-start ]
+    runs-on: ubuntu-latest
+    env:
+      PROJ_PATH: ./app
+      TESTS_PATH: ./tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'poetry'
+
+      - name: Install Dependencies
+        run: |
+          poetry env use 3.11
+          poetry install
+
+      - name: Run Black
+        run: poetry run black --check --diff $PROJ_PATH $TESTS_PATH
+
+      - name: Run Ruff
+        run: poetry run ruff --output-format github $PROJ_PATH $TESTS_PATH
+
+      - name: Run mypy
+        run: poetry run mypy $PROJ_PATH $TESTS_PATH
+
+      - name: Run Bandit
+        run: poetry run bandit -c pyproject.toml --silent -r $PROJ_PATH
+
+  python-tests:
+    needs: [ notify-start ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'poetry'
+
+      - name: Install Dependencies
+        run: |
+          poetry env use 3.11
+          poetry install
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: '7.0'
+
+      - name: Run tests
+        run: poetry run pytest
+
+  notify-finish:
+    needs: [ python-linters, python-tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This job's status is '${{ job.status }}'"
